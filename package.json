@@ -1,0 +1,29 @@
+{
+  "name": "tconsole",
+  "version": "1.0.0",
+  "description": "Console log to terminal",
+  "type": "main",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1",
+    "start": "node server.js"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/qnkhuat/TConsole.git"
+  },
+  "bin": {
+    "tconsole": "cli.js"
+  },
+  "preferGlobal": true,
+  "keywords": [],
+  "author": "",
+  "license": "ISC",
+  "bugs": {
+    "url": "https://github.com/qnkhuat/TConsole/issues"
+  },
+  "homepage": "https://github.com/qnkhuat/TConsole#readme",
+  "dependencies": {
+    "chalk": "^4.1.2",
+    "ws": "^8.2.0"
+  }
+}
