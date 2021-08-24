@@ -4,8 +4,9 @@ let ws = null;
 const defaultConsole = Object.assign(Object.create(Object.getPrototypeOf(console)), console);
 
 const configure = (conn) => {
-  // already configured
-  if (console.stdlog) return;
+  // skip if already configured
+  if (console._tsconsole_configured) return;
+  console._tsconsole_configured = true;
 
   console.log = (...args) => {
     sendWhenConnected(conn, JSON.stringify({ type: 'log', data: Array.from(args) }));
@@ -27,29 +28,27 @@ const configure = (conn) => {
     defaultConsole.debug.apply(defaultConsole, args);
   };
 
-  console.log("[TCONSOLE] CONFIGURED");
 }
 
 const release = () => {
   console = defaultConsole;
-  console.log("[TCONSOLE]: Released");
   ws = null;
 }
 
-const tconsole = (options = {}) => {
+const termsole = (options = {}) => {
   if (ws) return; // already running
 
   options = {
     host: "localhost",
-    port: 8080,
+    port: 3456,
     ssl: false,
     ...options,
   }
 
   ws = new WebSocket(`${options.ssl ? "wss" : "ws"}://${options.host}:${options.port}`);
   ws.onopen = () => {
-    console.log('[TCONSOLE]: connected');
     configure(ws);
+    console.log('[TCONSOLE]: Connected');
   };
 
   ws.onclose = (event) => {
@@ -81,4 +80,4 @@ const sendWhenConnected = (ws, msg, n = 0, maxTries = 100) => {
   }, 10); // wait 10 milisecond for the connection...
 }
 
-export default tconsole;
+export default termsole;

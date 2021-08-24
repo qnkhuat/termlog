@@ -1,2 +1,7 @@
-export default tconsole;
-declare function tconsole(options: any = {}): void;
+export default termsole;
+interface Options {
+  host?: string;
+  port?: number;
+  ssl?: boolean;
+}
+declare function termsole(options: Options = {}): void;

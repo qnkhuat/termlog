@@ -1,5 +1,5 @@
 {
-  "name": "tconsole",
+  "name": "termsole",
   "version": "1.0.0",
   "description": "Console log to terminal",
   "type": "main",
@@ -15,8 +15,8 @@
   },
   "preferGlobal": true,
   "keywords": [],
-  "author": "",
-  "license": "ISC",
+  "author": "Ngoc Khuat <qn.khuat@gmail.com>",
+  "license": "MIT",
   "bugs": {
     "url": "https://github.com/qnkhuat/TConsole/issues"
   },

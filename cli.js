@@ -31,7 +31,7 @@ const out = (text, color) => {
   }
 }
 
-const server = new WebSocket.Server({ port: 8080 });
+const server = new WebSocket.Server({ port: 3456 });
 
 server.on('connection', (ws) => {
   ws.on('message', (message) => {
