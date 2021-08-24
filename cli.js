@@ -1,35 +1,58 @@
 const WebSocket = require('ws');
 const chalk = require('chalk');
+const repl = require('repl');
 
-const { log } = console;
+const getTime = () => {
+  const now = new Date();
+  const hours = (now.getHours() > 9 ? "" : "0") + now.getHours();
+  const minutes = (now.getMinutes() > 9 ? "" : "0") + now.getMinutes();
+  const seconds = (now.getSeconds() > 9 ? "" : "0") + now.getSeconds();
+  return `[${hours}:${minutes}:${seconds}]`;
+}
 
-const logParse = (data) => {
-  return data.map((it) => JSON.stringify(it)).join(' ');
-};
+const out = (text, color) => {
+  switch (color) {
+    case "white":
+      console.log(getTime(), chalk.white(text))
+      break;
+    case "red":
+      console.log(getTime(), chalk.red(text))
+      break;
+    case "yellow":
+      console.log(getTime(), chalk.yellow(text))
+      break;
+    case "blue":
+      console.log(getTime(), chalk.blue(text))
+      break;
+    default:
+      console.log(getTime(), chalk.white(text))
+      break;
+  }
+}
 
-const wss = new WebSocket.Server({ port: 8080 });
+const server = new WebSocket.Server({ port: 8080 });
 
-wss.on('connection', function connection(ws) {
-  ws.on('message', function incoming(message) {
+server.on('connection', (ws) => {
+  ws.on('message', (message) => {
     const event = JSON.parse(message);
     const { type, data } = event;
     switch (type) {
       case 'log':
-        log('>>', logParse(data));
+        data.forEach((text) => out(text, "white"));
         break;
       case 'error':
-        log('>>', chalk.red(logParse(data)));
+        data.forEach((text) => out(text, "red"));
         break;
       case 'warn':
-        log('>>', chalk.yellow(logParse(data)));
+        data.forEach((text) => out(text, "yellow"));
         break;
       case 'debug':
-        log('>>', chalk.blue(logParse(data)));
+        data.forEach((text) => out(text, "blue"));
         break;
       default:
-        log('>>', logParse(data));
+        data.forEach((text) => out(text, "white"));
     }
   });
-
-  ws.send('something');
 });
+
+const r = repl.start('> ');

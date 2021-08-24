@@ -1,2 +1,2 @@
 export default tconsole;
-declare function tconsole(options: any): void;
+declare function tconsole(options: any = {}): void;
