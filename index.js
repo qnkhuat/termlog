@@ -1,9 +1,7 @@
+import { DEFAULT_HOST, DEFAULT_PORT } from "./config";
 let ws = null;
 
-// https://stackoverflow.com/a/44782052/7539840
-const defaultConsole = Object.assign(Object.create(Object.getPrototypeOf(console)), console);
-
-const configure = (conn) => {
+const configure = (conn, defaultConsole) => {
   // skip if already configured
   if (console._tsconsole_configured) return;
   console._tsconsole_configured = true;
@@ -30,34 +28,41 @@ const configure = (conn) => {
 
 }
 
-const release = () => {
+const release = (defaultConsole) => {
   console = defaultConsole;
   ws = null;
 }
 
 const termsole = (options = {}) => {
-  if (ws) return; // already running
+  // Ensure termsole doesn't run in production mode
+  if (process.env.NODE_ENV && process.env.NODE_ENV !== 'development') return;
+
+  if (ws) {
+    console.log("already running");
+    return; // already running
+  }  
+  const defaultConsole = Object.assign(Object.create(Object.getPrototypeOf(console)), console);
 
   options = {
-    host: "localhost",
-    port: 3456,
+    host: DEFAULT_HOST,
+    port: DEFAULT_PORT,
     ssl: false,
     ...options,
   }
 
   ws = new WebSocket(`${options.ssl ? "wss" : "ws"}://${options.host}:${options.port}`);
   ws.onopen = () => {
-    configure(ws);
+    configure(ws, defaultConsole);
     console.log('[TCONSOLE]: Connected');
   };
 
   ws.onclose = (event) => {
-    release();
+    release(defaultConsole);
     console.log("[TCONSOLE]: Disconnected", event.message);
   }
 
   ws.onerror = (event) => {
-    release();
+    release(defaultConsole);
     console.error("[TCONSOLE]: Disconnected", event.message);
   }
 }

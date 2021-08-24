@@ -1,5 +1,5 @@
-# TConsole
-Console log to terminal
+# Termsole
+Bring browser console to your terminal
 
+This package is intended to use while developement
 
-# https://stackoverflow.com/questions/65822409/logging-to-terminal-console-instead-of-browser-console-in-react-js
