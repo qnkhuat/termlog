@@ -1,6 +1,5 @@
 const DEFAULT_HOST = "localhost";
 const DEFAULT_PORT = 3456;
-let ws = null;
 
 const configure = (conn, defaultConsole) => {
   // skip if already configured
@@ -31,17 +30,14 @@ const configure = (conn, defaultConsole) => {
 
 const release = (defaultConsole) => {
   console = defaultConsole;
+  console._tsconsole_configured = false;
   ws = null;
 }
 
 const termsole = (options = {}) => {
   // Ensure termsole doesn't run in production mode
-  if (process.env.NODE_ENV && process.env.NODE_ENV !== 'development') return;
+  if (process && process.env.NODE_ENV && process.env.NODE_ENV !== 'development') return;
 
-  if (ws) {
-    console.log("already running");
-    return; // already running
-  }  
   const defaultConsole = Object.assign(Object.create(Object.getPrototypeOf(console)), console);
 
   options = {
@@ -51,7 +47,8 @@ const termsole = (options = {}) => {
     ...options,
   }
 
-  ws = new WebSocket(`${options.ssl ? "wss" : "ws"}://${options.host}:${options.port}`);
+  const ws = new WebSocket(`${options.ssl ? "wss" : "ws"}://${options.host}:${options.port}`);
+
   ws.onopen = () => {
     configure(ws, defaultConsole);
     console.log('[TCONSOLE]: Connected');
