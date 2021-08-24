@@ -1,6 +1,6 @@
 {
-  "name": "termsole",
-  "version": "1.0.1",
+  "name": "t-console",
+  "version": "1.0.0",
   "description": "Console log to terminal",
   "type": "main",
   "scripts": {

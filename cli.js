@@ -124,7 +124,7 @@ const startServer = (options) => {
 const args = minimist(process.argv.slice(2));
 if ("help" in args) {
   console.log(`
-Termsole - Console to your terminal
+TConsole - Console to your terminal
 
 Options:
 

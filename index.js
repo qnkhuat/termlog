@@ -34,8 +34,8 @@ const release = (defaultConsole) => {
   ws = null;
 }
 
-const termsole = (options = {}) => {
-  // Ensure termsole doesn't run in production mode
+const tconsole = (options = {}) => {
+  // Ensure tconsole doesn't run in production mode
   if (process && process.env.NODE_ENV && process.env.NODE_ENV !== 'development') return;
 
   const defaultConsole = Object.assign(Object.create(Object.getPrototypeOf(console)), console);
@@ -83,4 +83,4 @@ const sendWhenConnected = (ws, msg, n = 0, maxTries = 100) => {
   }, 10); // wait 10 milisecond for the connection...
 }
 
-export default termsole;
+export default tconsole;
