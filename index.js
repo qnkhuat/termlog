@@ -42,10 +42,11 @@ const tconsole = (options = {}) => {
   options = {
     host: "localhost",
     port: 8080,
+    ssl: false,
     ...options,
   }
 
-  ws = new WebSocket(`ws://${options.host}:${options.port}`);
+  ws = new WebSocket(`${options.ssl ? "wss" : "ws"}://${options.host}:${options.port}`);
   ws.onopen = () => {
     console.log('[TCONSOLE]: connected');
     configure(ws);
