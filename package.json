@@ -1,5 +1,5 @@
 {
-  "name": "tConsole",
+  "name": "termlog",
   "version": "1.0.0",
   "description": "Console log to terminal",
   "type": "main",
@@ -8,19 +8,19 @@
   },
   "repository": {
     "type": "git",
-    "url": "git+https://github.com/qnkhuat/TConsole.git"
+    "url": "git+https://github.com/qnkhuat/termlog.git"
   },
   "bin": {
-    "tconsole": "cli.js"
+    "tconsole": "server.js"
   },
   "preferGlobal": true,
   "keywords": [],
   "author": "Ngoc Khuat <qn.khuat@gmail.com>",
   "license": "MIT",
   "bugs": {
-    "url": "https://github.com/qnkhuat/TConsole/issues"
+    "url": "https://github.com/qnkhuat/termlog/issues"
   },
-  "homepage": "https://github.com/qnkhuat/TConsole#readme",
+  "homepage": "https://github.com/qnkhuat/termlog#readme",
   "dependencies": {
     "chalk": "^4.1.2",
     "minimist": "^1.2.5",

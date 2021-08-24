@@ -34,7 +34,7 @@ const release = (defaultConsole) => {
   ws = null;
 }
 
-const tconsole = (options = {}) => {
+const termlog = (options = {}) => {
   // Ensure tconsole doesn't run in production mode
   if (process && process.env.NODE_ENV && process.env.NODE_ENV !== 'development') return;
 
@@ -51,17 +51,17 @@ const tconsole = (options = {}) => {
 
   ws.onopen = () => {
     configure(ws, defaultConsole);
-    console.log('[TCONSOLE]: Connected');
+    console.log('[TERMLOG]: Connected');
   };
 
   ws.onclose = (event) => {
     release(defaultConsole);
-    console.log("[TCONSOLE]: Disconnected", event.message);
+    console.log("[TERMLOG]: Disconnected", event.message);
   }
 
   ws.onerror = (event) => {
     release(defaultConsole);
-    console.error("[TCONSOLE]: Disconnected", event.message);
+    console.error("[TERMLOG]: Disconnected", event.message);
   }
 }
 
@@ -83,4 +83,4 @@ const sendWhenConnected = (ws, msg, n = 0, maxTries = 100) => {
   }, 10); // wait 10 milisecond for the connection...
 }
 
-export default tconsole;
+export default termlog;

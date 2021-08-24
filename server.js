@@ -81,7 +81,7 @@ const startServer = (options) => {
     });
 
     conn.on("close", (event) => {
-      out("[TCONSOLE]: Closed", conn);
+      out("[TERMLOG]: Closed", conn);
     });
 
   });
@@ -124,7 +124,7 @@ const startServer = (options) => {
 const args = minimist(process.argv.slice(2));
 if ("help" in args) {
   console.log(`
-TConsole - Console to your terminal
+Termlog - Console log to terminal
 
 Options:
 
