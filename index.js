@@ -1,4 +1,5 @@
-import { DEFAULT_HOST, DEFAULT_PORT } from "./config";
+const DEFAULT_HOST = "localhost";
+const DEFAULT_PORT = 3456;
 let ws = null;
 
 const configure = (conn, defaultConsole) => {

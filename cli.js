@@ -1,8 +1,11 @@
 #!/usr/bin/env node
 const WebSocket = require('ws');
+const minimist = require("minimist");
 const chalk = require('chalk');
 const repl = require('repl');
-const { DEFAULT_HOST, DEFAULT_PORT } = require("./config");
+
+const DEFAULT_HOST = "localhost";
+const DEFAULT_PORT = 3456;
 
 const getTime = () => {
   const now = new Date();
@@ -12,85 +15,140 @@ const getTime = () => {
   return `[${hours}:${minutes}:${seconds}]`;
 }
 
-const out = (text, color = "white") => {
+const out = (text, color = "white", stream = null) => {
+  let formattedText;
   switch (color) {
     case "white":
-      console.log(getTime(), chalk.white(text))
+      text = `${getTime()} ${chalk.white(text)}`;
       break;
     case "red":
-      console.log(getTime(), chalk.red(text))
+      text = `${getTime()} ${chalk.red(text)}`;
       break;
     case "yellow":
-      console.log(getTime(), chalk.yellow(text))
+      text = `${getTime()} ${chalk.yellow(text)}`;
       break;
     case "blue":
-      console.log(getTime(), chalk.blue(text))
+      text = `${getTime()} ${chalk.blue(text)}`;
       break;
     default:
-      console.log(getTime(), chalk.white(text))
+      text = `${getTime()} ${chalk.white(text)}`;
       break;
   }
+  console.log(text);
+  if (stream) stream.write(text + "\n");
 }
 
 function heartbeat() {
   this.isAlive = true;
 }
 
-console.log(`Listening to http://${DEFAULT_HOST}:${DEFAULT_PORT}`);
-const server = new WebSocket.Server({ port: DEFAULT_PORT, host: DEFAULT_HOST});
+const startServer = (options) => {
 
-server.on("connection", (conn) => {
-  conn.isAlive = true;
+  console.log(`Server running at: ${options.host}:${options.port}`);
+    
+  let fileStream;
+  if (options.out) {
+    const fs = require('fs');
+    fileStream = fs.createWriteStream(options.out, {flags: 'a'});
+    console.log(`Saving log to ${options.out}`);
+  }
 
-  conn.on('pong', heartbeat);
+  const server = new WebSocket.Server({ port: options.port, host: options.host});
+  server.on("connection", (conn) => {
+    conn.isAlive = true;
 
-  conn.on('message', (message) => {
-    //conn.isAlive = true;
-    const event = JSON.parse(message);
-    const { type, data } = event;
-    switch (type) {
-      case 'log':
-        data.forEach((text) => out(text, "white"));
-        break;
-      case 'error':
-        data.forEach((text) => out(text, "red"));
-        break;
-      case 'warn':
-        data.forEach((text) => out(text, "yellow"));
-        break;
-      case 'debug':
-        data.forEach((text) => out(text, "blue"));
-        break;
-      default:
-        data.forEach((text) => out(text, "white"));
-    }
+    conn.on('pong', heartbeat);
+
+    conn.on('message', (message) => {
+      const event = JSON.parse(message);
+      const { type, data } = event;
+      switch (type) {
+        case 'log':
+          data.forEach((text) => out(text, "white", fileStream));
+          break;
+        case 'error':
+          data.forEach((text) => out(text, "red", fileStream));
+          break;
+        case 'warn':
+          data.forEach((text) => out(text, "yellow", fileStream));
+          break;
+        case 'debug':
+          data.forEach((text) => out(text, "blue", fileStream));
+          break;
+        default:
+          data.forEach((text) => out(text, "white"), fileStream);
+      }
+    });
+
+    conn.on("close", (event) => {
+      out("[TCONSOLE]: Closed", conn);
+    });
+
   });
-  
-  conn.on("close", (event) => {
-    out("[TCONSOLE]: Closed", conn);
+
+  const closeHandler = (status=0) => {
+    if (fileStream) fileStream.end();
+    server.close();
+    process.exit(status)
+  }
+
+
+  const interval = setInterval(() => {
+    server.clients.forEach((conn) => {
+      if (conn.isAlive === false)  return conn.terminate();
+
+      conn.isAlive = false;
+      conn.ping("");
+    });
+  }, 5000);
+
+  server.on("close", ()  => {
+    clearInterval(interval);
+    closeHandler(0);
   });
 
+  server.on("error", (event) => {
+    out(event, "red");
+    closeHandler(1);
+  })
+
+
+  // Start a node repl
+  const r = repl.start('> ');
+  r.on('exit', () => {
+    closeHandler(0);
 });
-
-const interval = setInterval(() => {
-  server.clients.forEach((conn) => {
-    if (conn.isAlive === false)  return conn.terminate();
-
-    conn.isAlive = false;
-    conn.ping("");
-  });
-}, 5000);
-
-server.on("close", ()  => {
-  clearInterval(interval);
-  process.exit(0);
-});
-
-server.on("error", (event) => {
-  out(event, "red");
-  process.exit(1);
-})
+}
 
 
-// Start a node repl
-const r = repl.start('> ');
+const args = minimist(process.argv.slice(2));
+if ("help" in args) {
+  console.log(`
+Termsole - Console to your terminal
+
+Options:
+
+--help
+    Display this help
+
+--addr localhost
+    Change address of server
+    Default is: localhost
+
+--port 3456
+    Change port of server
+    Default is: 3456
+
+--out arg
+    Save output to file
+
+  `);
+} else {
+  const options = {
+    port: DEFAULT_PORT,
+    host:DEFAULT_HOST,
+    ...args
+  }
+
+  startServer(options);
+}
