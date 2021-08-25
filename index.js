@@ -11,6 +11,11 @@ const configure = (conn, defaultConsole) => {
     defaultConsole.log.apply(defaultConsole, args);
   };
 
+  console.info = (...args) => {
+    sendWhenConnected(conn, JSON.stringify({ type: 'info', data: Array.from(args) }), defaultConsole);
+    defaultConsole.info.apply(defaultConsole, args);
+  };
+
   console.error = (...args) => {
     sendWhenConnected(conn, JSON.stringify({ type: 'error', data: Array.from(args) }), defaultConsole);
     defaultConsole.error.apply(defaultConsole, args);
