@@ -37,17 +37,26 @@ const release = (defaultConsole) => {
 }
 
 const termlog = (options = {}) => {
-  // Ensure tconsole doesn't run in production mode
-  if (process && process.env.NODE_ENV && process.env.NODE_ENV !== 'development') return;
-
-  const defaultConsole = Object.assign(Object.create(Object.getPrototypeOf(console)), console);
 
   options = {
     host: DEFAULT_HOST,
     port: DEFAULT_PORT,
     ssl: false,
+    disableEnvironmentCheck: false,
     ...options,
   }
+
+  // Ensure tconsole doesn't run in production mode
+  if (
+    !options.disableEnvironmentCheck
+    && process
+    && process.env.NODE_ENV
+    && process.env.NODE_ENV !== 'development'
+  ) {
+    return;
+  }
+
+  const defaultConsole = Object.assign(Object.create(Object.getPrototypeOf(console)), console);
 
   const ws = new WebSocket(`${options.ssl ? "wss" : "ws"}://${options.host}:${options.port}`);
 
