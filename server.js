@@ -45,7 +45,7 @@ function heartbeat() {
 const startServer = (options) => {
 
   console.log(`Server running at: ${options.host}:${options.port}`);
-    
+
   let fileStream;
   if (options.out) {
     const fs = require('fs');
@@ -61,7 +61,13 @@ const startServer = (options) => {
 
     conn.on('message', (message) => {
       const event = JSON.parse(message);
-      const { type, data } = event;
+      var { type, data } = event;
+
+      if (typeof data[0] === 'object') {
+        const prettyprint  = require('prettyprint');
+        data = prettyprint.default(data[0]).trim().split('\n');
+      }
+
       switch (type) {
         case 'log':
           data.forEach((text) => out(text, "white", fileStream));
