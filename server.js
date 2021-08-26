@@ -16,7 +16,6 @@ const getTime = () => {
 }
 
 const out = (text, color = "white", stream = null) => {
-  let formattedText;
   switch (color) {
     case "white":
       text = `${getTime()} ${chalk.white(text)}`;
@@ -80,7 +79,7 @@ const startServer = (options) => {
       }
     });
 
-    conn.on("close", (event) => {
+    conn.on("close", () => {
       out("[TERMLOG]: Closed", conn);
     });
 
