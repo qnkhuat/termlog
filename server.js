@@ -61,7 +61,7 @@ const startServer = (options) => {
 
     conn.on('message', (message) => {
       const event = JSON.parse(message);
-      var { type, data } = event;
+      let { type, data } = event;
 
       if (typeof data[0] === 'object') {
         data = JSON.stringify(data[0], null, 2).split('\n');
