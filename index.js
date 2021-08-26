@@ -36,9 +36,6 @@ const configure = (conn, defaultConsole) => {
 const release = (defaultConsole) => {
   console = defaultConsole;
   console._tsconsole_configured = false;
-  if (typeof ws !== 'undefined') {
-    ws = null;
-  }
 }
 
 const termlog = (options = {}) => {
