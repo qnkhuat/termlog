@@ -64,8 +64,7 @@ const startServer = (options) => {
       var { type, data } = event;
 
       if (typeof data[0] === 'object') {
-        const prettyprint  = require('prettyprint');
-        data = prettyprint.default(data[0]).trim().split('\n');
+        data = JSON.stringify(data[0], null, 2).split('\n');
       }
 
       switch (type) {
