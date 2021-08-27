@@ -28,6 +28,7 @@ const getTime = () => {
 }
 
 const out = (data, color = CWhite) => {
+  if (!Array.isArray(data)) data = [data];
   process.stdout.write(color);
   process.stdout.write(getTime() + " ");
   console.log.apply(console, data);
@@ -73,7 +74,6 @@ const startServer = (options) => {
       const event = JSON.parse(message);
       let { type, data } = event;
 
-      if (!Array.isArray(data)) data = [data];
       if (!SHOWLEVELS.includes(type)) return;
 
       switch (type) {
