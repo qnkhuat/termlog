@@ -39,9 +39,13 @@ __Note__: with this approach you have to do all steps 3-6 every-time you refresh
 
 ## Advanced options
 With `tconsole` command:
-- `--out path`: save log to file
+- `--out path`: Save log to file
 - `--port port`: Change server port
 - `--addr addr`: Change server address
+- `--show levels`:  Select log levels to display (info | warning | error | debug). Multiple levels are seperated by `,`
+> use `.show levels` while the server running to select again
+  
+  
 
 
 With `tconsole` package:

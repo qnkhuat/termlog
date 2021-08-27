@@ -7,22 +7,22 @@ const configure = (conn, defaultConsole) => {
   console._tsconsole_configured = true;
 
   console.log = (...args) => {
-    sendWhenConnected(conn, JSON.stringify({ type: 'log', data: Array.from(args) }));
+    sendWhenConnected(conn, JSON.stringify({ type: 'log', data: Array.from(args) , }), defaultConsole);
     defaultConsole.log.apply(defaultConsole, args);
   };
 
   console.error = (...args) => {
-    sendWhenConnected(conn, JSON.stringify({ type: 'error', data: Array.from(args) }));
+    sendWhenConnected(conn, JSON.stringify({ type: 'error', data: Array.from(args) }), defaultConsole);
     defaultConsole.error.apply(defaultConsole, args);
   };
 
   console.warn = (...args) => {
-    sendWhenConnected(conn, JSON.stringify({ type: 'warn', data: Array.from(args) }));
+    sendWhenConnected(conn, JSON.stringify({ type: 'warn', data: Array.from(args) }), defaultConsole);
     defaultConsole.warn.apply(defaultConsole, args);
   };
 
   console.debug = (...args) => {
-    sendWhenConnected(conn, JSON.stringify({ type: 'debug', data: Array.from(args) }));
+    sendWhenConnected(conn, JSON.stringify({ type: 'debug', data: Array.from(args) }), defaultConsole);
     defaultConsole.debug.apply(defaultConsole, args);
   };
 
@@ -31,7 +31,6 @@ const configure = (conn, defaultConsole) => {
 const release = (defaultConsole) => {
   console = defaultConsole;
   console._tsconsole_configured = false;
-  ws = null;
 }
 
 const termlog = (options = {}) => {
@@ -67,7 +66,7 @@ const termlog = (options = {}) => {
 
 
 // *** Utils *** //
-const sendWhenConnected = (ws, msg, n = 0, maxTries = 100) => {
+const sendWhenConnected = (ws, msg, defaultConsole, n = 0, maxTries = 100) => {
   // Closing or closed
   if (ws.readyState === 2 || ws.readyState === 3) return;
 
@@ -76,9 +75,9 @@ const sendWhenConnected = (ws, msg, n = 0, maxTries = 100) => {
     if (ws.readyState === 1) {
       ws.send(msg);
     } else if (n < maxTries) {
-      sendWhenConnected(ws, msg, n + 1);
+      sendWhenConnected(ws, msg, defaultConsole, n + 1);
     } else{
-      console.error("Exceed tries to send message: ", msg);
+      defaultConsole.error("Exceed tries to send message: ", msg);
     }
   }, 10); // wait 10 milisecond for the connection...
 }

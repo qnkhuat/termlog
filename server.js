@@ -1,11 +1,23 @@
 #!/usr/bin/env node
 const WebSocket = require('ws');
 const minimist = require("minimist");
-const chalk = require('chalk');
 const repl = require('repl');
 
 const DEFAULT_HOST = "localhost";
 const DEFAULT_PORT = 3456;
+
+const CRed = "\x1b[31m";
+const CYellow = "\x1b[33m";
+const CWhite = "\x1b[37m";
+const CBlue = "\x1b[34m";
+
+const LOGLEVELS = ['log', 'warn', 'error', 'debug'];
+// global var keeping track of what to display
+let SHOWLEVELS = LOGLEVELS; 
+
+function heartbeat() {
+  this.isAlive = true;
+}
 
 const getTime = () => {
   const now = new Date();
@@ -15,42 +27,41 @@ const getTime = () => {
   return `[${hours}:${minutes}:${seconds}]`;
 }
 
-const out = (text, color = "white", stream = null) => {
-  switch (color) {
-    case "white":
-      text = `${getTime()} ${chalk.white(text)}`;
-      break;
-    case "red":
-      text = `${getTime()} ${chalk.red(text)}`;
-      break;
-    case "yellow":
-      text = `${getTime()} ${chalk.yellow(text)}`;
-      break;
-    case "blue":
-      text = `${getTime()} ${chalk.blue(text)}`;
-      break;
-    default:
-      text = `${getTime()} ${chalk.white(text)}`;
-      break;
-  }
-  console.log(text);
-  if (stream) stream.write(text + "\n");
+const out = (data, color = CWhite) => {
+  process.stdout.write(color);
+  process.stdout.write(getTime() + " ");
+  console.log.apply(console, data);
+  process.stdout.write(CWhite);
 }
 
-function heartbeat() {
-  this.isAlive = true;
+const applyShowFilter = (args) => {
+  let newShowLevels =  [];
+
+  for (let level of args) {
+    level = level.trim();
+    if (LOGLEVELS.includes(level)) newShowLevels.push(level);
+    else {
+      console.error("[TERMLOG] Invalid level: ", level);
+      return false;
+    }
+  }
+  console.log(`[TERMLOG] Show ${newShowLevels.join(",")} only`)
+  SHOWLEVELS = newShowLevels;
+  return true;
 }
 
 const startServer = (options) => {
 
-  console.log(`Server running at: ${options.host}:${options.port}`);
+  console.log(`[TERMLOG] Server running at: ${options.host}:${options.port}`);
     
   let fileStream;
   if (options.out) {
     const fs = require('fs');
     fileStream = fs.createWriteStream(options.out, {flags: 'a'});
-    console.log(`Saving log to ${options.out}`);
+    console.log(`[TERMLOG] Saving log to ${options.out}`);
   }
+
+  if (options.show) applyShowFilter(options.show);
 
   const server = new WebSocket.Server({ port: options.port, host: options.host});
   server.on("connection", (conn) => {
@@ -60,27 +71,40 @@ const startServer = (options) => {
 
     conn.on('message', (message) => {
       const event = JSON.parse(message);
-      const { type, data } = event;
+      let { type, data } = event;
+
+      if (!Array.isArray(data)) data = [data];
+      if (!SHOWLEVELS.includes(type)) return;
+
       switch (type) {
         case 'log':
-          data.forEach((text) => out(text, "white", fileStream));
+          out(data, CWhite);
           break;
+
         case 'error':
-          data.forEach((text) => out(text, "red", fileStream));
+          out(data, CRed);
           break;
+
         case 'warn':
-          data.forEach((text) => out(text, "yellow", fileStream));
+          out(data, CYellow);
           break;
+
         case 'debug':
-          data.forEach((text) => out(text, "blue", fileStream));
+          out(data, CBlue);
           break;
+
         default:
-          data.forEach((text) => out(text, "white"), fileStream);
+          out(data, CWhite);
+          break;
       }
+      if (options.out) {
+        fileStream.write(data.join(" "));
+        fileStream.write("\n");
+      }    
     });
 
     conn.on("close", () => {
-      out("[TERMLOG]: Closed", conn);
+      out("[TERMLOG]: Closed", CWhite);
     });
 
   });
@@ -90,7 +114,6 @@ const startServer = (options) => {
     server.close();
     process.exit(status)
   }
-
 
   const interval = setInterval(() => {
     server.clients.forEach((conn) => {
@@ -107,13 +130,20 @@ const startServer = (options) => {
   });
 
   server.on("error", (event) => {
-    out(event, "red");
+    out(event, CRed);
     closeHandler(1);
   })
 
-
   // Start a node repl
-  const r = repl.start('> ');
+  const r = repl.start({prompt: "> "});
+  r.defineCommand('show', {
+    help: '[TERMLOG] Select log levels to display (info | warning | error | debug). Multiple levels are seperated by `,`',
+    action(arg) {
+      const args = arg.split(",");
+      applyShowFilter(args);
+    }
+  });
+
   r.on('exit', () => {
     closeHandler(0);
 });
@@ -141,13 +171,20 @@ Options:
 --out arg
     Save output to file
 
+--show args
+    Select log levels to display (info | warning | error | debug). Multiple levels are seperated by \`,\`
+
   `);
 } else {
+
+  if (args.show) args.show = args.show.split(",");
+
   const options = {
     port: DEFAULT_PORT,
     host:DEFAULT_HOST,
+    show: LOGLEVELS,
     ...args
   }
-
+  
   startServer(options);
 }
