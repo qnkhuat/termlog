@@ -5,6 +5,7 @@ const repl = require('repl');
 
 const DEFAULT_HOST = "localhost";
 const DEFAULT_PORT = 3456;
+const DEFAULT_PROMPT = "> ";
 
 const CRed = "\x1b[31m";
 const CYellow = "\x1b[33m";
@@ -135,7 +136,7 @@ const startServer = (options) => {
   })
 
   // Start a node repl
-  const r = repl.start({prompt: "> "});
+  const r = repl.start({prompt: options.prompt});
   r.defineCommand('show', {
     help: '[TERMLOG] Select log levels to display (info | log | warning | error | debug). Multiple levels are seperated by `,`',
     action(arg) {
@@ -171,6 +172,9 @@ Options:
 --out arg
     Save output to file
 
+--primpt arg
+    Sets promt, "" to disable
+
 --show args
     Select log levels to display (info | log | warning | error | debug). Multiple levels are seperated by \`,\`
 
@@ -183,6 +187,7 @@ Options:
     port: DEFAULT_PORT,
     host:DEFAULT_HOST,
     show: LOGLEVELS,
+    prompt: DEFAULT_PROMPT,
     ...args
   }
   
