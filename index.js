@@ -54,8 +54,9 @@ const termlog = (options = {}) => {
 
   const ws = new WebSocket(`${options.ssl ? "wss" : "ws"}://${options.host}:${options.port}`);
 
+  configure(ws, defaultConsole);
+
   ws.onopen = () => {
-    configure(ws, defaultConsole);
     console.log('[TERMLOG]: Connected');
   };
 
