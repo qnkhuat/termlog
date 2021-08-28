@@ -11,7 +11,7 @@ const CYellow = "\x1b[33m";
 const CWhite = "\x1b[37m";
 const CBlue = "\x1b[34m";
 
-const LOGLEVELS = ['log', 'warn', 'error', 'debug'];
+const LOGLEVELS = ['info', 'log', 'warn', 'error', 'debug'];
 // global var keeping track of what to display
 let SHOWLEVELS = LOGLEVELS; 
 
@@ -137,7 +137,7 @@ const startServer = (options) => {
   // Start a node repl
   const r = repl.start({prompt: "> "});
   r.defineCommand('show', {
-    help: '[TERMLOG] Select log levels to display (info | warning | error | debug). Multiple levels are seperated by `,`',
+    help: '[TERMLOG] Select log levels to display (info | log | warning | error | debug). Multiple levels are seperated by `,`',
     action(arg) {
       const args = arg.split(",");
       applyShowFilter(args);
@@ -172,7 +172,7 @@ Options:
     Save output to file
 
 --show args
-    Select log levels to display (info | warning | error | debug). Multiple levels are seperated by \`,\`
+    Select log levels to display (info | log | warning | error | debug). Multiple levels are seperated by \`,\`
 
   `);
 } else {
