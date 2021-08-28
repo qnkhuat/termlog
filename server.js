@@ -32,6 +32,12 @@ const out = (data, color = CWhite) => {
   if (!Array.isArray(data)) data = [data];
   process.stdout.write(color);
   process.stdout.write(getTime() + " ");
+
+  if (typeof data[0] === 'object') {
+    data[0] = JSON.stringify(data[0], null, 2);
+  }
+  data[0] = data[0].replace(/\n/g, '\n         | ');
+
   console.log.apply(console, data);
   process.stdout.write(CWhite);
 }
