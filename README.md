@@ -22,7 +22,7 @@ There are 2 ways and it depends on your preferences
 import termlog from "termlog"
 termlog()
 ```
-4. You should now see log being streamed to your terminal
+5. You should now see log being streamed to your terminal
 
 __Note__: with this approach you might want to remove two lines above in production. 
 
