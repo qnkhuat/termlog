@@ -1,5 +1,5 @@
 # Termlog
-Bring browser console to your terminal
+Console log to terminal
 
 ### What it does
 termlog send the browser console log to your terminal
