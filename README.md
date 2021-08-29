@@ -7,7 +7,8 @@ termlog send the browser console log to your terminal.
 It also comes with a __nodejs__ REPL so you can do some basic draft code
 
 ### When to use it
-While you developing your front-end app and you have to switch back and forth between IDE and browser.
+- While you developing your front-end app and you have to switch back and forth between IDE and browser.
+- When you want to test app on mobile need to check log. (See [Debug on mobile](#debug-on-mobile))
 
 # How to use it?
 There are 2 ways and it depends on your preferences
@@ -45,8 +46,6 @@ With `tconsole` command:
 - `--show levels`:  Select log levels to display (info | warning | error | debug). Multiple levels are seperated by `,`
 > use `.show levels` while the server running to select again
   
-  
-
 
 With `tconsole` package:
 
@@ -55,6 +54,14 @@ host: "localhost",
 port: 3456
 })`
 
+## Debug on mobile
+To be able to stream log from your app running on mobile you need to :
+- Start term log with `0.0.0.0` by running `npx termlog --addr 0.0.0.0`
+- Find your private IP address
+  -  MacOS: run `ipconfig getifaddr en0` if you're on wifi and 
+  -  Linux: run `hostname -I`
+  -  Windows: run `ipconfig` and find in the printed result. It should be under `192.168.x.x`
+- Inside your project init tconfig with: `termlog({host: "YOUR_PRIVATE_IP})`
 
 ## How it works
 Tconsole have 2 components:
