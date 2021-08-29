@@ -61,7 +61,7 @@ To be able to stream log from your app running on mobile you need to :
   -  MacOS: run `ipconfig getifaddr en0` if you're on wifi and 
   -  Linux: run `hostname -I`
   -  Windows: run `ipconfig` and find in the printed result. It should be under `192.168.x.x`
-- Inside your project init tconfig with: `termlog({host: "YOUR_PRIVATE_IP})`
+- Inside your project init tconfig with: `termlog({host: "YOUR_PRIVATE_IP"})`
 
 ## How it works
 Tconsole have 2 components:
