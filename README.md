@@ -8,7 +8,7 @@ It also comes with a __nodejs__ REPL so you can do some basic draft code
 
 ### When to use it
 - While you developing your front-end app and you have to switch back and forth between IDE and browser.
-- When you want to test app on mobile need to check log. (See [Debug on mobile](#debug-on-mobile))
+- When you test app on mobile and need to check log. (See [Debug on mobile](#debug-on-mobile))
 
 # How to use it?
 There are 2 ways and it depends on your preferences
