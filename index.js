@@ -6,6 +6,11 @@ const configure = (conn, defaultConsole) => {
   if (console._tsconsole_configured) return;
   console._tsconsole_configured = true;
 
+  console.info = (...args) => {
+    sendWhenConnected(conn, JSON.stringify({ type: 'info', data: Array.from(args) , }), defaultConsole);
+    defaultConsole.info.apply(defaultConsole, args);
+  };
+
   console.log = (...args) => {
     sendWhenConnected(conn, JSON.stringify({ type: 'log', data: Array.from(args) , }), defaultConsole);
     defaultConsole.log.apply(defaultConsole, args);
@@ -49,8 +54,9 @@ const termlog = (options = {}) => {
 
   const ws = new WebSocket(`${options.ssl ? "wss" : "ws"}://${options.host}:${options.port}`);
 
+  configure(ws, defaultConsole);
+
   ws.onopen = () => {
-    configure(ws, defaultConsole);
     console.log('[TERMLOG]: Connected');
   };
 
