@@ -48,7 +48,7 @@ const termlog = (options = {}) => {
     ...options,
   }
 
-  if (!options.disableEnvironmentCheck && process && process.env.NODE_ENV && process.env.NODE_ENV !== 'development') return;
+  if (!options.disableEnvironmentCheck && typeof process != "undefined" && process.env.NODE_ENV && process.env.NODE_ENV !== 'development') return;
 
   const defaultConsole = Object.assign(Object.create(Object.getPrototypeOf(console)), console);
 
