@@ -8,6 +8,7 @@ const DEFAULT_PORT = 3456;
 const DEFAULT_PROMPT = "> ";
 
 const CRed = "\x1b[31m";
+const CGreen = "\x1b[32m";
 const CYellow = "\x1b[33m";
 const CWhite = "\x1b[37m";
 const CBlue = "\x1b[34m";
@@ -30,8 +31,10 @@ const getTime = () => {
 
 const out = (data, color = CWhite) => {
   if (!Array.isArray(data)) data = [data];
-  process.stdout.write(color);
+
+  process.stdout.write(CGreen);
   process.stdout.write(getTime() + " ");
+  process.stdout.write(color);
 
   console.log.apply(console, data);
   process.stdout.write(CWhite);
